@@ -1,5 +1,23 @@
 #!/bin/bash -e
 # shellcheck disable=SC2119
+export IMG_NAME=RaspberryOS
+#The release version to build images against. Valid values are jessie, stretch, buster, bullseye, and testing.
+export RELEASE=buster
+export DEPLOY_ZIP=1
+export USE_QEMU="0"
+export LOCALE_DEFAULT="bg_BG.UTF-8"
+export TARGET_HOSTNAME="raspberrypi4"
+export KEYBOARD_KEYMAP="us"
+export KEYBOARD_LAYOUT="English (US)"
+export TIMEZONE_DEFAULT="Europe/Sofia"
+export FIRST_USER_NAME="pi"
+export FIRST_USER_PASS="raspberry"
+export ENABLE_SSH=1
+export PUBKEY_ONLY_SSH=1
+export PUBKEY_SSH_FIRST_USER="ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQCYts/KmJ2B46+8lBvr+YHHz7bpWzjtNRNiYKsvEU/XtPEy8+pXGmzb/Xw+908ew5CyQ63FqUZm7AN6QIyVt9MyxZt7zkJOTyUhAw7X78dNuO0UQx7F6o5wsT1POCPxtegDIYDAIAbupfHEVtTAgGFOOz1VeOI6hR0y8Hnv+XDpIsX8KDkuKQNZr6Db4cF7OWFWIaXsSlGbs3VV5mxF4yqHD1kwNR/KxSmGPBw/aSROHWZqg9s77R97hsnaXXQNdQ/o8hc10LuR9Jp4LKp6pApoPfNYjy921V8STwoeNbPDEGo561MoZEGJhhmEzMR0S2PTsBNjJyZGQ1wsoL9FDWtB example-key@example.com"
+export HEADLESS=1
+export STAGE_LIST="stage0 stage1 stage2"
+
 run_sub_stage()
 {
 	log "Begin ${SUB_STAGE_DIR}"
