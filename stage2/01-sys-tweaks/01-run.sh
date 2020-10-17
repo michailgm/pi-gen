@@ -11,28 +11,33 @@ install -m 644 files/console-setup   	"${ROOTFS_DIR}/etc/default/"
 
 install -m 755 files/rc.local		"${ROOTFS_DIR}/etc/"
 
-if [ -n "${PUBKEY_SSH_FIRST_USER}" ]; then
-	install -v -m 0700 -o 1000 -g 1000 -d "${ROOTFS_DIR}"/home/"${FIRST_USER_NAME}"/.ssh
-	echo "${PUBKEY_SSH_FIRST_USER}" >"${ROOTFS_DIR}"/home/"${FIRST_USER_NAME}"/.ssh/authorized_keys
-	chown 1000:1000 "${ROOTFS_DIR}"/home/"${FIRST_USER_NAME}"/.ssh/authorized_keys
-	chmod 0600 "${ROOTFS_DIR}"/home/"${FIRST_USER_NAME}"/.ssh/authorized_keys
-fi
+install -m 644 files/sshd_config		"${ROOTFS_DIR}/etc/ssh"
 
-if [ "${PUBKEY_ONLY_SSH}" = "1" ]; then
-	sed -i -Ee 's/^#?[[:blank:]]*PubkeyAuthentication[[:blank:]]*no[[:blank:]]*$/PubkeyAuthentication yes/
-s/^#?[[:blank:]]*PasswordAuthentication[[:blank:]]*yes[[:blank:]]*$/PasswordAuthentication no/' "${ROOTFS_DIR}"/etc/ssh/sshd_config
-fi
+install -m 755 files/rpi_firmware_update.sh		"${ROOTFS_DIR}/root/rpi_firmware_update.sh"
+
+install -m 755 files/list_installed_packages.sh		"${ROOTFS_DIR}/root/list_installed_packages.sh"
+
+install -m 755 files/download_installed_packages.sh		"${ROOTFS_DIR}/root/download_installed_packages.sh"
+
+install -m 755 files/download_other_packages.sh		"${ROOTFS_DIR}/root/download_other_packages.sh"
+
+# if [ -n "${PUBKEY_SSH_FIRST_USER}" ]; then
+	# install -v -m 0700 -o 1000 -g 1000 -d "${ROOTFS_DIR}"/home/"${FIRST_USER_NAME}"/.ssh
+	# echo "${PUBKEY_SSH_FIRST_USER}" >"${ROOTFS_DIR}"/home/"${FIRST_USER_NAME}"/.ssh/authorized_keys
+	# chown 1000:1000 "${ROOTFS_DIR}"/home/"${FIRST_USER_NAME}"/.ssh/authorized_keys
+	# chmod 0600 "${ROOTFS_DIR}"/home/"${FIRST_USER_NAME}"/.ssh/authorized_keys
+# fi
+
+# if [ "${PUBKEY_ONLY_SSH}" = "1" ]; then
+	# sed -i -Ee 's/^#?[[:blank:]]*PubkeyAuthentication[[:blank:]]*no[[:blank:]]*$/PubkeyAuthentication yes/
+# s/^#?[[:blank:]]*PasswordAuthentication[[:blank:]]*yes[[:blank:]]*$/PasswordAuthentication no/' "${ROOTFS_DIR}"/etc/ssh/sshd_config
+# fi
 
 on_chroot << EOF
 systemctl disable hwclock.sh
 systemctl disable nfs-common
 systemctl disable rpcbind
-if [ "${ENABLE_SSH}" == "1" ]; then
-	systemctl enable ssh
-else
-	systemctl disable ssh
-fi
-systemctl enable regenerate_ssh_host_keys
+systemctl enable ssh
 EOF
 
 if [ "${USE_QEMU}" = "1" ]; then
@@ -63,6 +68,8 @@ EOF
 
 on_chroot << EOF
 usermod --pass='*' root
+echo root:raspberrypi | chpasswd
+
 EOF
 
-rm -f "${ROOTFS_DIR}/etc/ssh/"ssh_host_*_key*
+#rm -f "${ROOTFS_DIR}/etc/ssh/"ssh_host_*_key*
